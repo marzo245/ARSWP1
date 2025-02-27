@@ -17,8 +17,20 @@ import java.util.logging.Logger;
  */
 public class HostBlackListsValidator {
 
+    public static HostBlackListsValidator hostBlackListsValidator;
     private static final int BLACK_LIST_ALARM_COUNT=5;
-    
+
+
+
+
+    public LinkedList<Integer> blackListOcurrences=new LinkedList<>();
+
+    public static HostBlackListsValidator getHostBlackValidator(){
+        if(hostBlackListsValidator==null){
+            hostBlackListsValidator = new HostBlackListsValidator();
+        }
+        return hostBlackListsValidator;
+    }
     /**
      * Check the given host's IP address in all the available black lists,
      * and report it as NOT Trustworthy when such IP was reported in at least
@@ -29,27 +41,24 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(String ipaddress){
+    public List<Integer> checkHost(String ipaddress, int cantHilos){
+
         
-        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
-        
+
         int ocurrencesCount=0;
         
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
         
         int checkedListsCount=0;
-        
-        for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
-            checkedListsCount++;
-            
-            if (skds.isInBlackListServer(i, ipaddress)){
-                
-                blackListOcurrences.add(i);
-                
-                ocurrencesCount++;
-            }
+        int divisonCiclos = skds.getRegisteredServersCount()/cantHilos;
+        System.out.println(divisonCiclos);
+        for(int j= 0; j<cantHilos;j++){
+            BlackListThread hilo = new BlackListThread(ipaddress,j*divisonCiclos,j*divisonCiclos+divisonCiclos);  
+            hilo.start();
+            checkedListsCount+= hilo.getCheckedListsCount();
+            ocurrencesCount+= hilo.getCantOcurrence();
+
         }
-        
         if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
             skds.reportAsNotTrustworthy(ipaddress);
         }
