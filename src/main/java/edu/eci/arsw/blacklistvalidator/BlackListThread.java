@@ -4,7 +4,7 @@ import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
 
 public class BlackListThread extends Thread {
     String ipaddress;
-    int start = 0;
+    int start=0 ;
     int end = 0;
     int checkedListsCount;
     int ocurrencesCount;
@@ -29,10 +29,10 @@ public class BlackListThread extends Thread {
 
     public void run() {
         for (int i=start;i<end;i++){
-            checkedListsCount++;
+            HostBlackListsValidator.getHostBlackValidator().setCheckedListsCount(1);
             if (skds.isInBlackListServer(i, ipaddress)){
-                HostBlackListsValidator.getHostBlackValidator().blackListOcurrences.add(i);
-                ocurrencesCount++;
+                HostBlackListsValidator.getHostBlackValidator().setCheckedListsCount(1);
+                HostBlackListsValidator.getHostBlackValidator().agregarNuevoRegistro(i);
             }
         }
     }
