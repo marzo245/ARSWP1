@@ -74,13 +74,14 @@ public class HostBlackListsValidator {
             ocurrencesCount+= hilo.getCantOcurrence();
         }
         }
-        if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
+        if (blackListOcurrences.size()>=BLACK_LIST_ALARM_COUNT){
             skds.reportAsNotTrustworthy(ipaddress);
             
         }
         else{
             skds.reportAsTrustworthy(ipaddress);
         }
+        
         int ultimo;
         if(blackListOcurrences.isEmpty()){
             ultimo =skds.getRegisteredServersCount();
